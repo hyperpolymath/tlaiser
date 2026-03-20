@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+= Tlaiser
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:toc: left
+:icons: font
+
+== What Is This?
+
+TLAiser extracts state machine specifications from existing code and
+**model-checks them with TLA+/PlusCal** — catching concurrency bugs that
+no amount of testing finds.
+
+Amazon uses TLA+ internally to verify distributed systems. TLAiser brings
+this power to everyone.
+
+== How It Works
+
+Describe your system's state transitions in `tlaiser.toml`. TLAiser:
+
+1. Extracts state machine models from your code (or from the manifest)
+2. Generates TLA+ specifications with safety and liveness properties
+3. Runs the TLC model checker to exhaustively verify all reachable states
+4. Reports violations with concrete counterexample traces
+
+== Key Value
+
+* **Catch distributed systems bugs before production**
+* **Exhaustive verification** — checks ALL possible interleavings
+* **Counterexample traces** — shows exactly how a bug manifests
+
+== Architecture
+
+Follows the hyperpolymath -iser pattern (same as https://github.com/hyperpolymath/chapeliser[Chapeliser]):
+
+* **Manifest** (`tlaiser.toml`) — describe WHAT you want
+* **Idris2 ABI** (`src/abi/`) — formal proofs of interface correctness
+* **Zig FFI** (`ffi/zig/`) — C-ABI bridge to target language runtime
+* **Codegen** (`src/codegen/`) — generates target language wrapper code
+* **Rust CLI** — parses manifest, validates, generates, builds, runs
+
+User writes zero target language code. Tlaiser generates everything.
+
+Part of the https://github.com/hyperpolymath/iseriser[-iser family] of acceleration frameworks.
+
+== Status
+
+**Pre-alpha.** Architecture defined, scaffolding in place, codegen pending.
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later
