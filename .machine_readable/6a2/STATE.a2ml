@@ -11,29 +11,30 @@
   (project-context
     (name "tlaiser")
     (description "Extract state machines from code and model-check with TLA+/PlusCal")
-    (status "scaffold")
+    (status "phase-1-complete")
     (priority "—")
-    (ecosystem "-iser family (https://github.com/hyperpolymath/iseriser)"))
+    (ecosystem "-iser family (https://github.com/hyperpolymath/iseriser)")
+    (domain "State machine extraction and formal model checking"))
 
   (current-position
-    (phase "scaffold-documented")
-    (completion-percentage 10)
-    (milestone "Architecture defined, CLI scaffolded, ABI/FFI bespoke types written, documentation complete"))
+    (phase "phase-1-complete")
+    (completion-percentage 45)
+    (milestone "Phase 1 complete — scaffold, CLI, manifest parser, codegen stubs, ABI types, RSR template"))
 
   (route-to-mvp
-    (step 1 "Implement state machine extraction from Rust source (enum + match arm parsing)")
-    (step 2 "Implement TLA+/PlusCal code generation from state machine IR")
-    (step 3 "Integrate TLC model checker as subprocess (invoke java -jar tla2tools.jar)")
-    (step 4 "Parse TLC output: state counts, violations, counterexample traces")
-    (step 5 "Implement Idris2 ABI proofs for StateMachine, TemporalFormula, ModelCheckResult")
-    (step 6 "Build Zig FFI bridge with state extraction and TLC execution")
-    (step 7 "End-to-end example: distributed lock service verification")
-    (step 8 "Integration tests with known-buggy protocols"))
+    (step 1 "Phase 1 — scaffold, CLI, manifest parser, ABI types [COMPLETE]")
+    (step 2 "Phase 2 — core domain logic implementation")
+    (step 3 "Phase 3 — Idris2 ABI formal proofs")
+    (step 4 "Phase 4 — Zig FFI bridge implementation")
+    (step 5 "Phase 5 — integration tests with real targets")
+    (step 6 "Phase 6 — documentation and examples")
+    (step 7 "Phase 7 — Chainguard container + CI hardening")
+    (step 8 "Phase 8 — first release (v0.1.0)"))
 
   (blockers-and-issues
-    (note "TLC requires Java runtime — need to document this dependency")
-    (note "State extraction from arbitrary source code is hard — start with manifest-only"))
+    (none "No blockers — Phase 1 complete, ready for Phase 2"))
 
   (critical-next-actions
-    (action "Implement TLA+ code generation from tlaiser.toml manifest")
-    (action "Write first working example: mutual exclusion protocol")))
+    (action "Begin Phase 2 — implement core domain logic for tlaiser")
+    (action "Write property-based tests for manifest parsing")
+    (action "Define Idris2 ABI proof obligations for Phase 3")))
