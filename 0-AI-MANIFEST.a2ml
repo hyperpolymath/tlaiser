@@ -1,24 +1,33 @@
-# ⚠️ STOP - CRITICAL READING REQUIRED
+# STOP - CRITICAL READING REQUIRED
 
 **THIS FILE MUST BE READ FIRST BY ALL AI AGENTS**
 
 ## WHAT IS THIS?
 
-This is the AI manifest for **[YOUR-REPO-NAME]**. It declares:
+This is the AI manifest for **tlaiser**. It declares:
 - Canonical file locations (where things MUST be, and nowhere else)
 - Critical invariants (rules that must NEVER be violated)
 - Repository structure and organization
+
+**tlaiser** extracts state machine specifications from existing code and
+model-checks them with TLA+/PlusCal. TLA+ (by Leslie Lamport) is the gold
+standard for specifying and verifying concurrent/distributed systems. PlusCal
+is its imperative-style front-end. The TLC model checker exhaustively explores
+all possible states to find invariant violations and liveness failures.
+
+Pipeline: source code -> state machine extraction -> TLA+/PlusCal spec
+generation -> TLC model checking -> invariant violation report.
 
 ## CANONICAL LOCATIONS (UNIVERSAL RULE)
 
 ### Machine-Readable Metadata: `.machine_readable/` ONLY
 
-These 6 a2ml files MUST exist in `.machine_readable/` directory ONLY:
+These 6 a2ml files MUST exist in `.machine_readable/6a2/` directory ONLY:
 1. **STATE.a2ml** - Project state, progress, blockers
 2. **META.a2ml** - Architecture decisions, governance
-3. **ECOSYSTEM.a2ml** - Position in ecosystem, relationships
+3. **ECOSYSTEM.a2ml** - Position in -iser ecosystem, relationships
 4. **AGENTIC.a2ml** - AI agent interaction patterns
-5. **NEUROSYM.a2ml** - Neurosymbolic integration config
+5. **NEUROSYM.a2ml** - Neurosymbolic/Hypatia integration config
 6. **PLAYBOOK.a2ml** - Operational runbook
 
 **CRITICAL:** If ANY of these files exist in the root directory, this is an ERROR.
@@ -46,7 +55,7 @@ Do not place maintenance policy files in repository root.
 
 ### Bot Directives: `.machine_readable/bot_directives/` ONLY
 
-Bot-specific instructions for your automated agents.
+Bot-specific instructions for automated agents.
 
 ### Contractiles: `.machine_readable/contractiles/` ONLY
 
@@ -70,6 +79,27 @@ Policy enforcement contracts (k9, dust, lust, must, trust).
 
 - `0-AI-MANIFEST.a2ml` - THIS FILE (universal entry point)
 
+## DOMAIN CONTEXT
+
+### TLA+ / PlusCal / TLC
+
+- **TLA+**: Temporal Logic of Actions — formal specification language for
+  concurrent and distributed systems, created by Leslie Lamport
+- **PlusCal**: Imperative-style front-end that compiles to TLA+
+- **TLC**: Model checker that exhaustively explores all reachable states
+- **Temporal operators**: Box (always), Diamond (eventually), LeadsTo
+- **Properties**: Safety (bad things never happen), Liveness (good things
+  eventually happen), Fairness (enabled actions eventually execute)
+
+### Key Types (defined in src/interface/abi/Types.idr)
+
+- `StateMachine` — states, transitions, guards, actions, initial state
+- `TemporalFormula` — Box/Diamond/LeadsTo/WeakFairness/StrongFairness
+- `SafetyProperty` — invariants checked as Box(P)
+- `LivenessProperty` — progress checked as Diamond(P) or P LeadsTo Q
+- `Invariant` — state predicate that must hold in every reachable state
+- `ModelCheckResult` — pass/safety-violation/liveness-violation/deadlock
+
 ## CORE INVARIANTS
 
 1. **No state file duplication** - Root must NOT contain STATE.a2ml, META.a2ml, etc.
@@ -80,42 +110,50 @@ Policy enforcement contracts (k9, dust, lust, must, trust).
 6. **Container images** - MUST use Chainguard base (`cgr.dev/chainguard/wolfi-base:latest` or `cgr.dev/chainguard/static:latest`)
 7. **Container runtime** - Podman, never Docker. Files are `Containerfile`, never `Dockerfile`
 8. **Container orchestration** - `selur-compose`, never `docker-compose`
+9. **ABI-FFI standard** - Idris2 for ABI proofs, Zig for FFI C-ABI bridge
+10. **No banned patterns** - No believe_me, assert_total, unsafeCoerce, sorry, Admitted, Obj.magic
 
 ## REPOSITORY STRUCTURE
 
-This repo follows the **Dual-Track** architecture:
-
 ```
-[YOUR-REPO-NAME]/
+tlaiser/
 ├── 0-AI-MANIFEST.a2ml         # THIS FILE (start here)
-├── README.adoc                 # High-level orientation (Rich Human)
-├── ROADMAP.adoc                # Future direction
+├── README.adoc                 # TLA+ model checking orientation
+├── ROADMAP.adoc                # Phase 0-6 development plan
 ├── CONTRIBUTING.adoc           # Human contribution guide
-├── GOVERNANCE.adoc             # Decision-making model
 ├── Justfile                    # Task runner
-├── Containerfile               # OCI build
-├── LICENSE                     # Primary license
+├── Cargo.toml                  # Rust project manifest
+├── Containerfile               # OCI build (Chainguard base)
+├── LICENSE                     # PMPL-1.0-or-later
 ├── src/                        # Source code
+│   ├── main.rs                 # CLI (init/validate/generate/build/run/info)
+│   ├── lib.rs                  # Library API
+│   ├── manifest/               # tlaiser.toml parser
+│   ├── codegen/                # TLA+/PlusCal spec generation
+│   ├── core/                   # State machine IR, extraction engine
+│   ├── definitions/            # TLA+ property definitions
+│   ├── errors/                 # Error types and diagnostics
 │   └── interface/              # Verified Interface Seams
-│       ├── abi/                # Idris2 ABI (The Spec)
-│       ├── ffi/                # Zig FFI (The Bridge)
-│       └── generated/          # C Headers (The Result)
-├── container/                  # Stapeln container ecosystem
-├── docs/                       # Technical depths
-│   ├── attribution/            # Citations, owners, maintainers (adoc)
-│   ├── architecture/           # Topology, diagrams
-│   ├── theory/                 # Domain theory
-│   └── practice/               # Manuals
-├── docs/legal/                  # Legal exhibits and full texts
-└── .machine_readable/          # ALL machine-readable metadata
+│       ├── abi/                # Idris2 ABI (Types, Layout, Foreign)
+│       ├── ffi/                # Zig FFI (libtlaiser C-ABI bridge)
+│       └── generated/          # Auto-generated C headers
+├── docs/                       # Documentation
+│   └── architecture/           # TOPOLOGY.md, diagrams
+├── .machine_readable/          # ALL machine-readable metadata
+│   └── 6a2/                    # STATE/META/ECOSYSTEM/AGENTIC/NEUROSYM/PLAYBOOK
+├── examples/                   # Example tlaiser.toml manifests
+├── tests/                      # Rust integration tests
+├── verification/               # Formal verification artifacts
+└── container/                  # Stapeln container ecosystem
 ```
 
 ## SESSION STARTUP CHECKLIST
 
-✅ Read THIS file (0-AI-MANIFEST.a2ml) first
-✅ Understand canonical location: `.machine_readable/`
-✅ State understanding of canonical locations
+- Read THIS file (0-AI-MANIFEST.a2ml) first
+- Understand canonical location: `.machine_readable/`
+- State understanding of canonical locations
+- Read .machine_readable/6a2/STATE.a2ml for current project state
 
 ## ATTESTATION PROOF
 
-**"I have read the AI manifest. All machine-readable content (state files, anchors, policies, bot directives, contractiles, AI guides) is located in `.machine_readable/` ONLY, and community metadata is in `.github/`. I will not create duplicate files in the root directory."**
+**"I have read the AI manifest for tlaiser. All machine-readable content (state files, anchors, policies, bot directives, contractiles, AI guides) is located in `.machine_readable/` ONLY, and community metadata is in `.github/`. I will not create duplicate files in the root directory."**

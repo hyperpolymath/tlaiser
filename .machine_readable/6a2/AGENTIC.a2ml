@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
-# AGENTIC.a2ml — AI agent constraints and capabilities
+# AGENTIC.a2ml — AI agent constraints and capabilities for tlaiser
 # Defines what AI agents can and cannot do in this repository.
 
 [metadata]
 version = "0.1.0"
-last-updated = "{{CURRENT_DATE}}"
+last-updated = "2026-03-21"
 
 [agent-permissions]
 can-edit-source = true
@@ -22,6 +22,15 @@ can-create-files = true
 # - Never use banned languages (TypeScript, Python, Go, etc.)
 # - Never place state files in repository root (must be in .machine_readable/)
 # - Never use AGPL license (use PMPL-1.0-or-later)
+# - Never generate TLA+ specs with unbounded state spaces (always require explicit bounds)
+# - Never invoke TLC without a max-states or max-depth limit
+
+[domain-constraints]
+# TLA+ specific:
+# - Generated specs must include TypeOK invariant
+# - All processes must have at least weak fairness
+# - State variable names must be valid TLA+ identifiers
+# - Temporal formulae must be well-formed (no nested Box/Diamond without purpose)
 
 [maintenance-integrity]
 fail-closed = true

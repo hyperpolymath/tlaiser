@@ -5,31 +5,35 @@
 (state
   (metadata
     (version "0.1.0")
-    (last-updated "2026-03-20")
+    (last-updated "2026-03-21")
     (author "Jonathan D.A. Jewell"))
 
   (project-context
     (name "tlaiser")
-    (description "Extract state machines and model-check with TLA+/PlusCal")
+    (description "Extract state machines from code and model-check with TLA+/PlusCal")
     (status "scaffold")
     (priority "—")
     (ecosystem "-iser family (https://github.com/hyperpolymath/iseriser)"))
 
   (current-position
-    (phase "initial-scaffold")
-    (completion-percentage 5)
-    (milestone "Architecture defined, CLI scaffolded, RSR template complete"))
+    (phase "scaffold-documented")
+    (completion-percentage 10)
+    (milestone "Architecture defined, CLI scaffolded, ABI/FFI bespoke types written, documentation complete"))
 
   (route-to-mvp
-    (step 1 "Replace codegen stubs with target-language-specific generation")
-    (step 2 "Implement Idris2 ABI proofs for core invariants")
-    (step 3 "Build Zig FFI bridge")
-    (step 4 "Integration tests with real-world examples")
-    (step 5 "Documentation and examples"))
+    (step 1 "Implement state machine extraction from Rust source (enum + match arm parsing)")
+    (step 2 "Implement TLA+/PlusCal code generation from state machine IR")
+    (step 3 "Integrate TLC model checker as subprocess (invoke java -jar tla2tools.jar)")
+    (step 4 "Parse TLC output: state counts, violations, counterexample traces")
+    (step 5 "Implement Idris2 ABI proofs for StateMachine, TemporalFormula, ModelCheckResult")
+    (step 6 "Build Zig FFI bridge with state extraction and TLC execution")
+    (step 7 "End-to-end example: distributed lock service verification")
+    (step 8 "Integration tests with known-buggy protocols"))
 
   (blockers-and-issues
-    (none "Project is in scaffold phase — no blockers yet"))
+    (note "TLC requires Java runtime — need to document this dependency")
+    (note "State extraction from arbitrary source code is hard — start with manifest-only"))
 
   (critical-next-actions
-    (action "Implement codegen for primary use case")
-    (action "Write first working example end-to-end")))
+    (action "Implement TLA+ code generation from tlaiser.toml manifest")
+    (action "Write first working example: mutual exclusion protocol")))

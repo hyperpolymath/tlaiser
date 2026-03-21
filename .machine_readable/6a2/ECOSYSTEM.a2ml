@@ -6,12 +6,13 @@
   (version "0.1.0")
   (name "tlaiser")
   (type "tool")
-  (purpose "Extract state machines and model-check with TLA+/PlusCal")
+  (purpose "Extract state machines from code and model-check with TLA+/PlusCal — catching concurrency bugs via exhaustive state space exploration")
 
   (position-in-ecosystem
     (family "-iser acceleration frameworks")
     (meta-framework "iseriser")
     (relationship "sibling")
+    (domain "formal verification / model checking")
     (top-3 ("typedqliser" "chapeliser" "verisimiser")))
 
   (related-projects
@@ -27,12 +28,27 @@
     (project "verisimiser"
       (relationship "sibling-priority-3")
       (description "VeriSimDB octad database augmentation"))
+    (project "halideiser"
+      (relationship "sibling")
+      (description "Halide image processing pipeline acceleration"))
     (project "squeakwell"
       (relationship "sibling")
       (description "Database recovery via constraint propagation"))
     (project "proven"
       (relationship "dependency")
-      (description "Shared Idris2 verified library"))
+      (description "Shared Idris2 verified library — may provide shared formal primitives"))
     (project "typell"
       (relationship "dependency")
-      (description "Type theory engine"))))
+      (description "Type theory engine — potential type system integration"))
+    (project "boj-server"
+      (relationship "consumer")
+      (description "MCP server — tlaiser will be available as a BoJ cartridge")))
+
+  (external-dependencies
+    (dependency "TLA+ Tools"
+      (url "https://github.com/tlaplus/tlaplus")
+      (description "TLC model checker and PlusCal translator (tla2tools.jar)")
+      (license "MIT"))
+    (dependency "Java Runtime"
+      (description "Required by TLC model checker")
+      (version ">= 11"))))
