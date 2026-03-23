@@ -192,8 +192,7 @@ impl PropertyConfig {
 pub fn load_manifest(path: &str) -> Result<Manifest> {
     let content = std::fs::read_to_string(path)
         .with_context(|| format!("Failed to read manifest: {}", path))?;
-    toml::from_str(&content)
-        .with_context(|| format!("Failed to parse manifest: {}", path))
+    toml::from_str(&content).with_context(|| format!("Failed to parse manifest: {}", path))
 }
 
 /// Validate a parsed manifest for internal consistency.
@@ -332,7 +331,14 @@ pub fn print_info(manifest: &Manifest) {
             sm.initial_state
         );
         if !sm.variables.is_empty() {
-            println!("    Variables: {}", sm.variables.iter().map(|v| v.name.as_str()).collect::<Vec<_>>().join(", "));
+            println!(
+                "    Variables: {}",
+                sm.variables
+                    .iter()
+                    .map(|v| v.name.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            );
         }
     }
     println!();
@@ -341,9 +347,14 @@ pub fn print_info(manifest: &Manifest) {
         println!("  [{}] {} — {}", p.kind, p.name, p.formula);
     }
     println!();
-    println!("TLC: {} workers, max-states={}, symmetry={}",
+    println!(
+        "TLC: {} workers, max-states={}, symmetry={}",
         manifest.tlc.workers,
-        if manifest.tlc.max_states == 0 { "unlimited".to_string() } else { manifest.tlc.max_states.to_string() },
+        if manifest.tlc.max_states == 0 {
+            "unlimited".to_string()
+        } else {
+            manifest.tlc.max_states.to_string()
+        },
         manifest.tlc.symmetry
     );
 }

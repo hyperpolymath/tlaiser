@@ -81,7 +81,10 @@ pub fn generate_all(manifest: &Manifest, output_dir: &str) -> Result<()> {
 /// Currently prints the command that would be run; actual TLC invocation
 /// requires a Java runtime and the TLA+ tools jar on the PATH.
 pub fn build(manifest: &Manifest, _release: bool) -> Result<()> {
-    println!("Building tlaiser specs for project: {}", manifest.project.name);
+    println!(
+        "Building tlaiser specs for project: {}",
+        manifest.project.name
+    );
     for sm_cfg in &manifest.state_machines {
         println!(
             "  Would run TLC on {}.tla with {}.cfg",

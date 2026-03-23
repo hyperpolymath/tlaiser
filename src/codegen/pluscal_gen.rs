@@ -29,10 +29,7 @@ pub fn generate_pluscal(sm: &StateMachine, properties: &[Property]) -> String {
 
     // Module header
     let sep = "-".repeat(4);
-    out.push_str(&format!(
-        "{} MODULE {}PlusCal {}\n",
-        sep, sm.name, sep
-    ));
+    out.push_str(&format!("{} MODULE {}PlusCal {}\n", sep, sm.name, sep));
     if let Some(ref desc) = sm.description {
         out.push_str(&format!("\\* {}\n", desc));
     }
@@ -90,10 +87,7 @@ pub fn generate_pluscal(sm: &StateMachine, properties: &[Property]) -> String {
 fn generate_algorithm_block(sm: &StateMachine) -> String {
     let mut out = String::new();
 
-    out.push_str(&format!(
-        "(* --fair algorithm {}\n",
-        sm.name
-    ));
+    out.push_str(&format!("(* --fair algorithm {}\n", sm.name));
 
     // Variables section
     out.push_str("variables\n");
@@ -128,10 +122,7 @@ fn generate_algorithm_block(sm: &StateMachine) -> String {
                 generate_single_transition(&mut out, source_state, t, sm, "            ");
             } else {
                 // Multiple transitions from same state: nested either/or
-                out.push_str(&format!(
-                    "            await state = {};\n",
-                    source_state
-                ));
+                out.push_str(&format!("            await state = {};\n", source_state));
                 let mut first_inner = true;
                 for t in transitions {
                     if first_inner {
@@ -323,9 +314,18 @@ mod tests {
         StateMachine {
             name: "MutexProtocol".to_string(),
             states: vec![
-                State { name: "Idle".into(), description: None },
-                State { name: "Waiting".into(), description: None },
-                State { name: "Critical".into(), description: None },
+                State {
+                    name: "Idle".into(),
+                    description: None,
+                },
+                State {
+                    name: "Waiting".into(),
+                    description: None,
+                },
+                State {
+                    name: "Critical".into(),
+                    description: None,
+                },
             ],
             initial_state: "Idle".into(),
             transitions: vec![

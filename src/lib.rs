@@ -12,7 +12,7 @@ pub mod abi;
 pub mod codegen;
 pub mod manifest;
 
-pub use manifest::{load_manifest, validate, Manifest};
+pub use manifest::{Manifest, load_manifest, validate};
 
 /// Convenience: load, validate, and generate all TLA+ artifacts.
 ///

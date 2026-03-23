@@ -8,7 +8,7 @@
 // TLA+-specific constraints such as identifier validity, reachability,
 // and determinism analysis.
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::abi::StateMachine;
@@ -25,10 +25,7 @@ use crate::abi::StateMachine;
 pub fn validate_state_machine(sm: &StateMachine) -> Result<()> {
     // Structural validation via ABI
     if let Err(errors) = sm.validate() {
-        bail!(
-            "Structural validation failed:\n  {}",
-            errors.join("\n  ")
-        );
+        bail!("Structural validation failed:\n  {}", errors.join("\n  "));
     }
 
     // Check: machine name is a valid TLA+ identifier
@@ -211,15 +208,21 @@ pub fn find_nondeterministic_states(sm: &StateMachine) -> Vec<(String, usize)> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::abi::{State, Transition, StateMachine};
+    use crate::abi::{State, StateMachine, Transition};
 
     /// Helper to build a simple state machine for testing.
     fn simple_machine() -> StateMachine {
         StateMachine {
             name: "Test".to_string(),
             states: vec![
-                State { name: "A".into(), description: None },
-                State { name: "B".into(), description: None },
+                State {
+                    name: "A".into(),
+                    description: None,
+                },
+                State {
+                    name: "B".into(),
+                    description: None,
+                },
             ],
             initial_state: "A".into(),
             transitions: vec![Transition {
@@ -260,9 +263,18 @@ mod tests {
         let sm = StateMachine {
             name: "Unreachable".to_string(),
             states: vec![
-                State { name: "A".into(), description: None },
-                State { name: "B".into(), description: None },
-                State { name: "C".into(), description: None },
+                State {
+                    name: "A".into(),
+                    description: None,
+                },
+                State {
+                    name: "B".into(),
+                    description: None,
+                },
+                State {
+                    name: "C".into(),
+                    description: None,
+                },
             ],
             initial_state: "A".into(),
             transitions: vec![Transition {
@@ -286,15 +298,42 @@ mod tests {
         let sm = StateMachine {
             name: "NonDet".to_string(),
             states: vec![
-                State { name: "A".into(), description: None },
-                State { name: "B".into(), description: None },
-                State { name: "C".into(), description: None },
+                State {
+                    name: "A".into(),
+                    description: None,
+                },
+                State {
+                    name: "B".into(),
+                    description: None,
+                },
+                State {
+                    name: "C".into(),
+                    description: None,
+                },
             ],
             initial_state: "A".into(),
             transitions: vec![
-                Transition { from: "A".into(), to: "B".into(), guard: None, action: None, label: None },
-                Transition { from: "A".into(), to: "C".into(), guard: None, action: None, label: None },
-                Transition { from: "B".into(), to: "C".into(), guard: None, action: None, label: None },
+                Transition {
+                    from: "A".into(),
+                    to: "B".into(),
+                    guard: None,
+                    action: None,
+                    label: None,
+                },
+                Transition {
+                    from: "A".into(),
+                    to: "C".into(),
+                    guard: None,
+                    action: None,
+                    label: None,
+                },
+                Transition {
+                    from: "B".into(),
+                    to: "C".into(),
+                    guard: None,
+                    action: None,
+                    label: None,
+                },
             ],
             variables: vec![],
             description: None,

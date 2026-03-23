@@ -115,7 +115,10 @@ pub enum TemporalProperty {
     Eventually(String),
     /// `P ~> Q` — whenever P holds, Q eventually holds.
     #[serde(rename = "leads-to")]
-    LeadsTo { antecedent: String, consequent: String },
+    LeadsTo {
+        antecedent: String,
+        consequent: String,
+    },
     /// `WF_vars(Action)` — weak fairness constraint.
     #[serde(rename = "weak-fairness")]
     WeakFairness { vars: String, action: String },
@@ -129,7 +132,10 @@ impl fmt::Display for TemporalProperty {
         match self {
             TemporalProperty::Always(p) => write!(f, "[]{}", p),
             TemporalProperty::Eventually(p) => write!(f, "<>{}", p),
-            TemporalProperty::LeadsTo { antecedent, consequent } => {
+            TemporalProperty::LeadsTo {
+                antecedent,
+                consequent,
+            } => {
                 write!(f, "{} ~> {}", antecedent, consequent)
             }
             TemporalProperty::WeakFairness { vars, action } => {
@@ -208,10 +214,7 @@ impl StateMachine {
 
         // Check: at least one state
         if self.states.is_empty() {
-            errors.push(format!(
-                "State machine '{}' has no states",
-                self.name
-            ));
+            errors.push(format!("State machine '{}' has no states", self.name));
         }
 
         // Check: no duplicate state names
@@ -356,8 +359,14 @@ mod tests {
         let sm = StateMachine {
             name: "TestMachine".to_string(),
             states: vec![
-                State { name: "Idle".into(), description: None },
-                State { name: "Running".into(), description: None },
+                State {
+                    name: "Idle".into(),
+                    description: None,
+                },
+                State {
+                    name: "Running".into(),
+                    description: None,
+                },
             ],
             initial_state: "Idle".into(),
             transitions: vec![Transition {
@@ -378,7 +387,10 @@ mod tests {
     fn test_invalid_initial_state() {
         let sm = StateMachine {
             name: "Bad".to_string(),
-            states: vec![State { name: "A".into(), description: None }],
+            states: vec![State {
+                name: "A".into(),
+                description: None,
+            }],
             initial_state: "NonExistent".into(),
             transitions: vec![],
             variables: vec![],
@@ -393,7 +405,10 @@ mod tests {
     fn test_invalid_transition_target() {
         let sm = StateMachine {
             name: "Bad".to_string(),
-            states: vec![State { name: "A".into(), description: None }],
+            states: vec![State {
+                name: "A".into(),
+                description: None,
+            }],
             initial_state: "A".into(),
             transitions: vec![Transition {
                 from: "A".into(),

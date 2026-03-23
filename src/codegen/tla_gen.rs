@@ -87,10 +87,7 @@ fn generate_module_header(sm: &StateMachine) -> String {
     let mut header = String::new();
 
     // TLA+ module header
-    header.push_str(&format!(
-        "{} MODULE {} {}\n",
-        separator, sm.name, separator
-    ));
+    header.push_str(&format!("{} MODULE {} {}\n", separator, sm.name, separator));
 
     // Description as a comment
     if let Some(ref desc) = sm.description {
@@ -230,10 +227,7 @@ fn generate_transition_actions(sm: &StateMachine) -> String {
             if unchanged.len() == 1 {
                 section.push_str(&format!("    /\\ UNCHANGED {}\n", unchanged[0]));
             } else {
-                section.push_str(&format!(
-                    "    /\\ UNCHANGED <<{}>>\n",
-                    unchanged.join(", ")
-                ));
+                section.push_str(&format!("    /\\ UNCHANGED <<{}>>\n", unchanged.join(", ")));
             }
         }
 
@@ -425,8 +419,14 @@ mod tests {
         StateMachine {
             name: "TestSpec".to_string(),
             states: vec![
-                State { name: "Idle".into(), description: None },
-                State { name: "Running".into(), description: None },
+                State {
+                    name: "Idle".into(),
+                    description: None,
+                },
+                State {
+                    name: "Running".into(),
+                    description: None,
+                },
             ],
             initial_state: "Idle".into(),
             transitions: vec![Transition {

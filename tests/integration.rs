@@ -249,7 +249,10 @@ fn test_generated_tla_spec_structure() {
         tla_content.contains("EXTENDS Naturals"),
         "Should extend standard modules"
     );
-    assert!(tla_content.ends_with("====\n"), "Should end with module footer");
+    assert!(
+        tla_content.ends_with("====\n"),
+        "Should end with module footer"
+    );
 
     // Constants for states
     assert!(
@@ -294,10 +297,7 @@ fn test_generated_tla_spec_structure() {
     );
 
     // Next-state relation
-    assert!(
-        tla_content.contains("Next =="),
-        "Should have Next relation"
-    );
+    assert!(tla_content.contains("Next =="), "Should have Next relation");
 
     // Specification
     assert!(
@@ -333,16 +333,18 @@ fn test_generated_pluscal_structure() {
     let output_path = output_dir.path().to_str().unwrap();
     codegen::generate_all(&m, output_path).expect("Code generation should succeed");
 
-    let pcal_content =
-        fs::read_to_string(output_dir.path().join("MutexProtocolPlusCal.tla"))
-            .expect("Failed to read PlusCal file");
+    let pcal_content = fs::read_to_string(output_dir.path().join("MutexProtocolPlusCal.tla"))
+        .expect("Failed to read PlusCal file");
 
     // Module structure
     assert!(
         pcal_content.contains("MODULE MutexProtocolPlusCal"),
         "Should contain PlusCal module name"
     );
-    assert!(pcal_content.ends_with("====\n"), "Should end with module footer");
+    assert!(
+        pcal_content.ends_with("====\n"),
+        "Should end with module footer"
+    );
 
     // Algorithm block
     assert!(
@@ -366,9 +368,9 @@ fn test_generated_pluscal_structure() {
 
     // PlusCal assignment syntax
     assert!(
-        pcal_content.contains("state := Waiting") ||
-        pcal_content.contains("state := Critical") ||
-        pcal_content.contains("state := Idle"),
+        pcal_content.contains("state := Waiting")
+            || pcal_content.contains("state := Critical")
+            || pcal_content.contains("state := Idle"),
         "Should contain PlusCal assignments"
     );
 
@@ -437,9 +439,8 @@ fn test_generated_run_script() {
     let output_path = output_dir.path().to_str().unwrap();
     codegen::generate_all(&m, output_path).expect("Code generation should succeed");
 
-    let script_content =
-        fs::read_to_string(output_dir.path().join("run_tlc_MutexProtocol.sh"))
-            .expect("Failed to read run script");
+    let script_content = fs::read_to_string(output_dir.path().join("run_tlc_MutexProtocol.sh"))
+        .expect("Failed to read run script");
 
     assert!(
         script_content.starts_with("#!/usr/bin/env bash"),
@@ -497,7 +498,10 @@ fn test_init_manifest_refuses_overwrite() {
 
     // Second init fails
     let result = manifest::init_manifest(dir_path);
-    assert!(result.is_err(), "Should refuse to overwrite existing manifest");
+    assert!(
+        result.is_err(),
+        "Should refuse to overwrite existing manifest"
+    );
 }
 
 // -----------------------------------------------------------------------
@@ -512,8 +516,7 @@ fn test_mutex_example_is_valid() {
         "/examples/mutex-protocol/tlaiser.toml"
     );
 
-    let m = manifest::load_manifest(example_path)
-        .expect("Example manifest should be parseable");
+    let m = manifest::load_manifest(example_path).expect("Example manifest should be parseable");
     manifest::validate(&m).expect("Example manifest should be valid");
 
     assert_eq!(m.project.name, "mutex-protocol");
@@ -537,8 +540,7 @@ fn test_end_to_end_mutex_example() {
     let output_dir = TempDir::new().expect("Failed to create output dir");
     let output_path = output_dir.path().to_str().unwrap();
 
-    tlaiser::generate(example_path, output_path)
-        .expect("End-to-end generation should succeed");
+    tlaiser::generate(example_path, output_path).expect("End-to-end generation should succeed");
 
     // Verify all artifacts exist
     assert!(output_dir.path().join("MutexProtocol.tla").exists());
