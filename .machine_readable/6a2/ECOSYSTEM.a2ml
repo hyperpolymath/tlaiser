@@ -1,54 +1,20 @@
-;; SPDX-License-Identifier: PMPL-1.0-or-later
-;; Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
-;; ECOSYSTEM.a2ml — Ecosystem position for tlaiser
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# ECOSYSTEM.a2ml — Tlaiser ecosystem position
+[metadata]
+version = "0.1.0"
+last-updated = "2026-04-11"
 
-(ecosystem
-  (version "0.1.0")
-  (name "tlaiser")
-  (type "tool")
-  (purpose "Extract state machines from code and model-check with TLA+/PlusCal — catching concurrency bugs via exhaustive state space exploration")
+[project]
+name = "Tlaiser"
+purpose = "Extract state machines from code and model-check with TLA+/PlusCal — catching concurrency bugs via exhaustive state space exploration"
+role = "tool"
 
-  (position-in-ecosystem
-    (family "-iser acceleration frameworks")
-    (meta-framework "iseriser")
-    (relationship "sibling")
-    (domain "formal verification / model checking")
-    (top-3 ("typedqliser" "chapeliser" "verisimiser")))
+[position-in-ecosystem]
+category = ""
 
-  (related-projects
-    (project "iseriser"
-      (relationship "meta-framework")
-      (description "Generates new -iser project scaffolding"))
-    (project "typedqliser"
-      (relationship "sibling-priority-1")
-      (description "Formal type safety for any query language"))
-    (project "chapeliser"
-      (relationship "sibling-priority-2")
-      (description "Chapel distributed computing acceleration"))
-    (project "verisimiser"
-      (relationship "sibling-priority-3")
-      (description "VeriSimDB octad database augmentation"))
-    (project "halideiser"
-      (relationship "sibling")
-      (description "Halide image processing pipeline acceleration"))
-    (project "squeakwell"
-      (relationship "sibling")
-      (description "Database recovery via constraint propagation"))
-    (project "proven"
-      (relationship "dependency")
-      (description "Shared Idris2 verified library — may provide shared formal primitives"))
-    (project "typell"
-      (relationship "dependency")
-      (description "Type theory engine — potential type system integration"))
-    (project "boj-server"
-      (relationship "consumer")
-      (description "MCP server — tlaiser will be available as a BoJ cartridge")))
-
-  (external-dependencies
-    (dependency "TLA+ Tools"
-      (url "https://github.com/tlaplus/tlaplus")
-      (description "TLC model checker and PlusCal translator (tla2tools.jar)")
-      (license "MIT"))
-    (dependency "Java Runtime"
-      (description "Required by TLC model checker")
-      (version ">= 11"))))
+[related-projects]
+projects = [
+  # No related projects recorded
+]
