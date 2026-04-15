@@ -2,6 +2,8 @@
 # tlaiser — Extract state machines and model-check with TLA+/PlusCal
 
 # Default: build and test
+import? "contractile.just"
+
 default: build test
 
 # Build release binary
