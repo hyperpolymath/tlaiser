@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: PMPL-1.0-or-later -->
+<!-- SPDX-License-Identifier: MPL-2.0 -->
 <!-- Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk> -->
 
 # TOPOLOGY.md — tlaiser
@@ -22,7 +22,7 @@ tlaiser/
 ├── ROADMAP.adoc                    # Phased development plan
 ├── SECURITY.md                     # Security policy
 ├── CONTRIBUTING.adoc               # Contribution guide
-├── LICENSE                         # PMPL-1.0-or-later
+├── LICENSE                         # MPL-2.0
 │
 ├── src/                            # Rust source code
 │   ├── main.rs                     # CLI entry point (clap)
