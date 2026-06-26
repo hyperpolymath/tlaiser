@@ -18,6 +18,8 @@ module Tlaiser.ABI.Types
 import Data.Bits
 import Data.So
 import Data.Vect
+import Data.List
+import Decidable.Equality
 
 %default total
 
@@ -29,12 +31,12 @@ import Data.Vect
 public export
 data Platform = Linux | Windows | MacOS | BSD | WASM
 
-||| Compile-time platform detection
+||| The platform this build targets. Defaults to Linux; the Rust/Zig build
+||| layer overrides this via codegen target selection. (Previously a
+||| `%runElab` stub that required ElabReflection and did not compile.)
 public export
 thisPlatform : Platform
-thisPlatform =
-  %runElab do
-    pure Linux  -- Default, override with compiler flags
+thisPlatform = Linux
 
 --------------------------------------------------------------------------------
 -- FFI Result Codes
@@ -73,7 +75,9 @@ resultToInt TlcError = 5
 resultToInt SpecSyntaxError = 6
 resultToInt StateSpaceExhausted = 7
 
-||| Results are decidably equal
+||| Results are decidably equal. The off-diagonal cases discharge the
+||| disequality explicitly; the previous `decEq _ _ = No absurd` did not
+||| compile (no `Uninhabited (x = y)` instance exists for these).
 public export
 DecEq Result where
   decEq Ok Ok = Yes Refl
@@ -84,7 +88,62 @@ DecEq Result where
   decEq TlcError TlcError = Yes Refl
   decEq SpecSyntaxError SpecSyntaxError = Yes Refl
   decEq StateSpaceExhausted StateSpaceExhausted = Yes Refl
-  decEq _ _ = No absurd
+  decEq Ok Error = No (\case Refl impossible)
+  decEq Ok InvalidParam = No (\case Refl impossible)
+  decEq Ok OutOfMemory = No (\case Refl impossible)
+  decEq Ok NullPointer = No (\case Refl impossible)
+  decEq Ok TlcError = No (\case Refl impossible)
+  decEq Ok SpecSyntaxError = No (\case Refl impossible)
+  decEq Ok StateSpaceExhausted = No (\case Refl impossible)
+  decEq Error Ok = No (\case Refl impossible)
+  decEq Error InvalidParam = No (\case Refl impossible)
+  decEq Error OutOfMemory = No (\case Refl impossible)
+  decEq Error NullPointer = No (\case Refl impossible)
+  decEq Error TlcError = No (\case Refl impossible)
+  decEq Error SpecSyntaxError = No (\case Refl impossible)
+  decEq Error StateSpaceExhausted = No (\case Refl impossible)
+  decEq InvalidParam Ok = No (\case Refl impossible)
+  decEq InvalidParam Error = No (\case Refl impossible)
+  decEq InvalidParam OutOfMemory = No (\case Refl impossible)
+  decEq InvalidParam NullPointer = No (\case Refl impossible)
+  decEq InvalidParam TlcError = No (\case Refl impossible)
+  decEq InvalidParam SpecSyntaxError = No (\case Refl impossible)
+  decEq InvalidParam StateSpaceExhausted = No (\case Refl impossible)
+  decEq OutOfMemory Ok = No (\case Refl impossible)
+  decEq OutOfMemory Error = No (\case Refl impossible)
+  decEq OutOfMemory InvalidParam = No (\case Refl impossible)
+  decEq OutOfMemory NullPointer = No (\case Refl impossible)
+  decEq OutOfMemory TlcError = No (\case Refl impossible)
+  decEq OutOfMemory SpecSyntaxError = No (\case Refl impossible)
+  decEq OutOfMemory StateSpaceExhausted = No (\case Refl impossible)
+  decEq NullPointer Ok = No (\case Refl impossible)
+  decEq NullPointer Error = No (\case Refl impossible)
+  decEq NullPointer InvalidParam = No (\case Refl impossible)
+  decEq NullPointer OutOfMemory = No (\case Refl impossible)
+  decEq NullPointer TlcError = No (\case Refl impossible)
+  decEq NullPointer SpecSyntaxError = No (\case Refl impossible)
+  decEq NullPointer StateSpaceExhausted = No (\case Refl impossible)
+  decEq TlcError Ok = No (\case Refl impossible)
+  decEq TlcError Error = No (\case Refl impossible)
+  decEq TlcError InvalidParam = No (\case Refl impossible)
+  decEq TlcError OutOfMemory = No (\case Refl impossible)
+  decEq TlcError NullPointer = No (\case Refl impossible)
+  decEq TlcError SpecSyntaxError = No (\case Refl impossible)
+  decEq TlcError StateSpaceExhausted = No (\case Refl impossible)
+  decEq SpecSyntaxError Ok = No (\case Refl impossible)
+  decEq SpecSyntaxError Error = No (\case Refl impossible)
+  decEq SpecSyntaxError InvalidParam = No (\case Refl impossible)
+  decEq SpecSyntaxError OutOfMemory = No (\case Refl impossible)
+  decEq SpecSyntaxError NullPointer = No (\case Refl impossible)
+  decEq SpecSyntaxError TlcError = No (\case Refl impossible)
+  decEq SpecSyntaxError StateSpaceExhausted = No (\case Refl impossible)
+  decEq StateSpaceExhausted Ok = No (\case Refl impossible)
+  decEq StateSpaceExhausted Error = No (\case Refl impossible)
+  decEq StateSpaceExhausted InvalidParam = No (\case Refl impossible)
+  decEq StateSpaceExhausted OutOfMemory = No (\case Refl impossible)
+  decEq StateSpaceExhausted NullPointer = No (\case Refl impossible)
+  decEq StateSpaceExhausted TlcError = No (\case Refl impossible)
+  decEq StateSpaceExhausted SpecSyntaxError = No (\case Refl impossible)
 
 --------------------------------------------------------------------------------
 -- Opaque Handles
@@ -97,12 +156,15 @@ public export
 data Handle : Type where
   MkHandle : (ptr : Bits64) -> {auto 0 nonNull : So (ptr /= 0)} -> Handle
 
-||| Safely create a handle from a pointer value.
-||| Returns Nothing if pointer is null (prevents null dereference).
+||| Safely create a handle from a pointer value. Uses `choose` to obtain a
+||| real `So (ptr /= 0)` witness for the non-null branch. (Previously
+||| `Just (MkHandle ptr)` left the `auto` proof unsolved and did not compile.)
 public export
 createHandle : Bits64 -> Maybe Handle
-createHandle 0 = Nothing
-createHandle ptr = Just (MkHandle ptr)
+createHandle ptr =
+  case choose (ptr /= 0) of
+    Left ok => Just (MkHandle ptr {nonNull = ok})
+    Right _ => Nothing
 
 ||| Extract pointer value from handle for FFI transport
 public export
@@ -179,10 +241,12 @@ record StateMachine (numStates : Nat) (numVars : Nat) where
   initialState : StateId numStates
   numProcesses : Nat
 
-||| Proof that a state machine has at least one state (non-trivial)
+||| Proof that a state machine has at least one state (non-trivial).
+||| Renamed from `NonEmpty` to avoid shadowing the Prelude's list
+||| `NonEmpty` predicate, which the trace obligations below rely on.
 public export
-data NonEmpty : StateMachine n v -> Type where
-  IsNonEmpty : {auto prf : n `GT` 0} -> NonEmpty sm
+data StateMachineNonEmpty : StateMachine n v -> Type where
+  IsNonEmpty : {auto prf : n `GT` 0} -> StateMachineNonEmpty sm
 
 --------------------------------------------------------------------------------
 -- Temporal Logic Formulae
@@ -348,10 +412,16 @@ ptrSize MacOS = 64
 ptrSize BSD = 64
 ptrSize WASM = 32
 
-||| Pointer type for platform
+||| Pointer-sized integer type for a platform. 64-bit platforms use `Bits64`;
+||| WASM (32-bit pointers) uses `Bits32`. (Previously `Bits (ptrSize p)`, which
+||| does not typecheck — `Bits` is an interface, not a `Nat -> Type` family.)
 public export
 CPtr : Platform -> Type -> Type
-CPtr p _ = Bits (ptrSize p)
+CPtr Linux _ = Bits64
+CPtr Windows _ = Bits64
+CPtr MacOS _ = Bits64
+CPtr BSD _ = Bits64
+CPtr WASM _ = Bits32
 
 --------------------------------------------------------------------------------
 -- Memory Layout Proofs
@@ -367,21 +437,20 @@ public export
 data HasAlignment : Type -> Nat -> Type where
   AlignProof : {0 t : Type} -> {n : Nat} -> HasAlignment t n
 
-||| Size of C types (platform-specific)
+||| Size of C types (platform-specific). Matches on the concrete primitive
+||| types directly; `CInt p` / `CSize p` reduce to `Bits32`/`Bits64`, so the
+||| `CInt _` / `CSize _` clauses of the original (which matched on a stuck
+||| type-level function application and did not typecheck) are subsumed here.
 public export
 cSizeOf : (p : Platform) -> (t : Type) -> Nat
-cSizeOf p (CInt _) = 4
-cSizeOf p (CSize _) = if ptrSize p == 64 then 8 else 4
 cSizeOf p Bits32 = 4
 cSizeOf p Bits64 = 8
 cSizeOf p Double = 8
 cSizeOf p _ = ptrSize p `div` 8
 
-||| Alignment of C types (platform-specific)
+||| Alignment of C types (platform-specific). Same reduction note as `cSizeOf`.
 public export
 cAlignOf : (p : Platform) -> (t : Type) -> Nat
-cAlignOf p (CInt _) = 4
-cAlignOf p (CSize _) = if ptrSize p == 64 then 8 else 4
 cAlignOf p Bits32 = 4
 cAlignOf p Bits64 = 8
 cAlignOf p Double = 8
