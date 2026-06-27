@@ -9,3 +9,4 @@ modules = Tlaiser.ABI.Types
         , Tlaiser.ABI.Layout
         , Tlaiser.ABI.Foreign
         , Tlaiser.ABI.Proofs
+        , Tlaiser.ABI.Semantics
