@@ -10,3 +10,4 @@ modules = Tlaiser.ABI.Types
         , Tlaiser.ABI.Foreign
         , Tlaiser.ABI.Proofs
         , Tlaiser.ABI.Semantics
+        , Tlaiser.ABI.Invariants
