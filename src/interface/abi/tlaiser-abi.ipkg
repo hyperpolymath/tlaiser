@@ -12,3 +12,4 @@ modules = Tlaiser.ABI.Types
         , Tlaiser.ABI.Semantics
         , Tlaiser.ABI.Invariants
         , Tlaiser.ABI.FfiSeam
+        , Tlaiser.ABI.Capstone
