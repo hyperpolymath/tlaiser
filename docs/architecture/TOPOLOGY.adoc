@@ -1,18 +1,16 @@
-<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
-<!-- Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk> -->
+== TOPOLOGY.md — tlaiser
 
-# TOPOLOGY.md — tlaiser
+=== Purpose
 
-## Purpose
+TLAiser extracts state machine specifications from existing code and
+model-checks them with TLA+/PlusCal. It catches concurrency bugs
+(deadlocks, race conditions, protocol violations) that testing alone
+cannot find, by exhaustively exploring all possible state interleavings
+via the TLC model checker.
 
-TLAiser extracts state machine specifications from existing code and model-checks
-them with TLA+/PlusCal. It catches concurrency bugs (deadlocks, race conditions,
-protocol violations) that testing alone cannot find, by exhaustively exploring all
-possible state interleavings via the TLC model checker.
+=== Repository Layout
 
-## Repository Layout
-
-```
+....
 tlaiser/
 ├── 0-AI-MANIFEST.a2ml              # AI agent entry point
 ├── Cargo.toml                      # Rust project manifest
@@ -77,11 +75,11 @@ tlaiser/
 ├── .github/                        # GitHub CI/CD (17 workflows)
 ├── .hypatia/                       # Hypatia scanner rules
 └── .well-known/                    # RFC 8615 well-known URIs
-```
+....
 
-## Data Flow
+=== Data Flow
 
-```
+....
                     ┌─────────────────┐
                     │  tlaiser.toml   │ (user manifest)
                     │  or source code │
@@ -116,35 +114,44 @@ tlaiser/
             │  states  │     │ example      │
             │  valid)  │     │ trace        │
             └──────────┘     └──────────────┘
-```
+....
 
-## Interface Seams (ABI-FFI Standard)
+=== Interface Seams (ABI-FFI Standard)
 
-| Layer | Language | Role |
-|-------|----------|------|
-| **ABI** | Idris2 | Formal type definitions with dependent-type proofs: `StateMachine`, `TemporalFormula`, `SafetyProperty`, `LivenessProperty`, `Invariant`, `ModelCheckResult` |
-| **FFI** | Zig | C-compatible implementation: state extraction engine, TLA+ code generation, TLC process management |
-| **Headers** | C (generated) | Bridge between Idris2 ABI and Zig FFI |
+[width="100%",cols="31%,43%,26%",options="header",]
+|===
+|Layer |Language |Role
+|*ABI* |Idris2 |Formal type definitions with dependent-type proofs:
+`+StateMachine+`, `+TemporalFormula+`, `+SafetyProperty+`,
+`+LivenessProperty+`, `+Invariant+`, `+ModelCheckResult+`
 
-## Key Dependencies
+|*FFI* |Zig |C-compatible implementation: state extraction engine, TLA+
+code generation, TLC process management
 
-| Crate | Purpose |
-|-------|---------|
-| `clap` | CLI argument parsing |
-| `serde` + `toml` | Manifest parsing |
-| `anyhow` + `thiserror` | Error handling |
-| `handlebars` | TLA+ template rendering |
-| `walkdir` | Source file discovery |
+|*Headers* |C (generated) |Bridge between Idris2 ABI and Zig FFI
+|===
 
-## Ecosystem Position
+=== Key Dependencies
 
-TLAiser is part of the hyperpolymath **-iser family** of acceleration frameworks.
-It sits alongside typedqliser, chapeliser, verisimiser, and ~26 other -isers,
-all generated from the iseriser meta-framework.
+[cols=",",options="header",]
+|===
+|Crate |Purpose
+|`+clap+` |CLI argument parsing
+|`+serde+` + `+toml+` |Manifest parsing
+|`+anyhow+` + `+thiserror+` |Error handling
+|`+handlebars+` |TLA+ template rendering
+|`+walkdir+` |Source file discovery
+|===
 
-## External Dependencies
+=== Ecosystem Position
 
-- **TLA+ Tools** (tla2tools.jar) — TLC model checker, PlusCal translator
-- **Java runtime** — required by TLC
-- **Idris2 compiler** — for ABI proof verification
-- **Zig compiler** — for FFI bridge compilation
+TLAiser is part of the hyperpolymath *-iser family* of acceleration
+frameworks. It sits alongside typedqliser, chapeliser, verisimiser, and
+~26 other -isers, all generated from the iseriser meta-framework.
+
+=== External Dependencies
+
+* *TLA+ Tools* (tla2tools.jar) — TLC model checker, PlusCal translator
+* *Java runtime* — required by TLC
+* *Idris2 compiler* — for ABI proof verification
+* *Zig compiler* — for FFI bridge compilation
